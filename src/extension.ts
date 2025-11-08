@@ -7,9 +7,15 @@ import { PythonBridge } from './pythonBridge';
 import { StatusBarManager } from './statusBar';
 import { ensureVidurai } from './installer';
 import { log, getConfig, getOutputChannel } from './utils';
+import { FileWatcher } from './fileWatcher';
+import { TerminalWatcher } from './terminalWatcher';
+import { DiagnosticWatcher } from './diagnosticWatcher';
 
 let bridge: PythonBridge | null = null;
 let statusBar: StatusBarManager | null = null;
+let fileWatcher: FileWatcher | null = null;
+let terminalWatcher: TerminalWatcher | null = null;
+let diagnosticWatcher: DiagnosticWatcher | null = null;
 
 /**
  * Extension activation
@@ -46,8 +52,15 @@ export async function activate(context: vscode.ExtensionContext) {
         // Register commands
         registerCommands(context);
 
-        // Register event handlers (Phase 3+)
-        // TODO: File watchers, terminal watchers
+        // Start watchers (Phase 3)
+        fileWatcher = new FileWatcher(bridge);
+        fileWatcher.start();
+
+        terminalWatcher = new TerminalWatcher(bridge);
+        terminalWatcher.start();
+
+        diagnosticWatcher = new DiagnosticWatcher(bridge);
+        diagnosticWatcher.start();
 
         log('info', 'Vidurai extension activated successfully');
 
@@ -73,6 +86,22 @@ export async function activate(context: vscode.ExtensionContext) {
  */
 export function deactivate() {
     log('info', 'Vidurai extension deactivating...');
+
+    // Stop watchers
+    if (fileWatcher) {
+        fileWatcher.stop();
+        fileWatcher = null;
+    }
+
+    if (terminalWatcher) {
+        terminalWatcher.stop();
+        terminalWatcher = null;
+    }
+
+    if (diagnosticWatcher) {
+        diagnosticWatcher.stop();
+        diagnosticWatcher = null;
+    }
 
     if (bridge) {
         bridge.stop();

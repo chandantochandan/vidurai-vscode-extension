@@ -47,6 +47,27 @@
           "enum": ["debug", "info", "warn", "error"],
           "default": "info",
           "description": "Logging level for debugging"
+        },
+        "vidurai.maxFileSize": {
+          "type": "number",
+          "default": 51200,
+          "description": "Maximum file size to track (bytes, 0 = unlimited)",
+          "minimum": 0
+        },
+        "vidurai.trackTerminal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Track terminal commands and output"
+        },
+        "vidurai.trackDiagnostics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Track errors and warnings"
+        },
+        "vidurai.ignoredPaths": {
+          "type": "array",
+          "default": ["node_modules", ".git", "dist", "build", "out", ".venv"],
+          "description": "Paths to ignore for context tracking"
         }
       }
     },
