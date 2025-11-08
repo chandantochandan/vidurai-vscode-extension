@@ -60,6 +60,11 @@
         "command": "vidurai.restartBridge",
         "title": "Vidurai: Restart Python Bridge",
         "icon": "$(debug-restart)"
+      },
+      {
+        "command": "vidurai.showLogs",
+        "title": "Vidurai: Show Logs",
+        "icon": "$(output)"
       }
     ]
   },
