@@ -1,0 +1,16 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.yarnrc
+vscode.proposed.d.ts
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
+node_modules/**
+test/**
+python-bridge/.venv/**
+python-bridge/__pycache__/**
+python-bridge/.pytest_cache/**
+python-bridge/sessions/**

@@ -1,0 +1,83 @@
+{
+  "name": "vidurai-memory",
+  "displayName": "Vidurai Memory Manager",
+  "description": "Intelligent AI memory management for VS Code",
+  "version": "0.1.0",
+  "publisher": "vidurai-ai",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "memory",
+    "claude",
+    "context",
+    "vidurai"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Vidurai",
+      "properties": {
+        "vidurai.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable Vidurai context tracking"
+        },
+        "vidurai.debounceMs": {
+          "type": "number",
+          "default": 2000,
+          "description": "Debounce time for file edits (milliseconds)",
+          "minimum": 500,
+          "maximum": 10000
+        },
+        "vidurai.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to Python executable (auto-detected if empty)"
+        },
+        "vidurai.logLevel": {
+          "type": "string",
+          "enum": ["debug", "info", "warn", "error"],
+          "default": "info",
+          "description": "Logging level for debugging"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "vidurai.copyContext",
+        "title": "Vidurai: Copy Relevant Context",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "vidurai.restartBridge",
+        "title": "Vidurai: Restart Python Bridge",
+        "icon": "$(debug-restart)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vscode/test-electron": "^2.3.0",
+    "eslint": "^8.45.0",
+    "typescript": "^5.1.0"
+  }
+}

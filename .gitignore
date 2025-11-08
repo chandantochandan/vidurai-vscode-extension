@@ -1,0 +1,13 @@
+node_modules/
+out/
+.vscode-test/
+*.vsix
+.DS_Store
+*.log
+
+# Python bridge (handled separately)
+python-bridge/.venv/
+python-bridge/__pycache__/
+python-bridge/.pytest_cache/
+python-bridge/sessions/
+python-bridge/*.pyc
