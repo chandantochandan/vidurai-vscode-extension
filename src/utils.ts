@@ -2,6 +2,8 @@
  * Utility functions
  */
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -9,9 +11,20 @@ const execAsync = promisify(exec);
 
 /**
  * Find Python executable
- * Tries python3, python, py in order
+ * 1. Check for local venv (development)
+ * 2. Try python3, python, py (system)
  */
-export async function findPython(): Promise<string | null> {
+export async function findPython(extensionPath?: string): Promise<string | null> {
+    // First, check for local venv (for development/testing)
+    if (extensionPath) {
+        const venvPython = path.join(extensionPath, 'python-bridge', '.venv', 'bin', 'python');
+        if (fs.existsSync(venvPython)) {
+            log('info', `Found local venv Python: ${venvPython}`);
+            return venvPython;
+        }
+    }
+
+    // Fall back to system Python
     const candidates = process.platform === 'win32'
         ? ['py', 'python', 'python3']  // Windows: py launcher first
         : ['python3', 'python'];        // Unix: python3 first
@@ -20,6 +33,7 @@ export async function findPython(): Promise<string | null> {
         try {
             const { stdout } = await execAsync(`${cmd} --version`);
             if (stdout.includes('Python 3.')) {
+                log('info', `Found system Python: ${cmd}`);
                 return cmd;
             }
         } catch {

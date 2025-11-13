@@ -21,14 +21,17 @@ export class PythonBridge {
     private process: ChildProcess | null = null;
     private pythonPath: string;
     private bridgePath: string;
+    private bridgeDir: string;
     private responseCallbacks: Map<number, (response: BridgeResponse) => void> = new Map();
     private requestId: number = 0;
     private crashCount: number = 0;
     private readonly MAX_CRASHES = 3;
+    private stdoutBuffer: string = '';  // Buffer for partial lines
 
     constructor(pythonPath: string, extensionPath: string) {
         this.pythonPath = pythonPath;
         this.bridgePath = path.join(extensionPath, 'python-bridge', 'bridge.py');
+        this.bridgeDir = path.join(extensionPath, 'python-bridge');
     }
 
     /**
@@ -40,31 +43,35 @@ export class PythonBridge {
             return;
         }
 
-        log('info', `Starting Python bridge: ${this.pythonPath} ${this.bridgePath}`);
+        log('info', `Starting Python bridge: ${this.pythonPath} -u ${this.bridgePath}`);
+        log('info', `Bridge working directory: ${this.bridgeDir}`);
 
         try {
-            this.process = spawn(this.pythonPath, [this.bridgePath], {
-                stdio: ['pipe', 'pipe', 'pipe']
+            // Spawn Python with -u flag for unbuffered I/O
+            this.process = spawn(this.pythonPath, ['-u', this.bridgePath], {
+                stdio: ['pipe', 'pipe', 'pipe'],
+                cwd: this.bridgeDir,
+                env: { ...process.env, PYTHONUNBUFFERED: '1' }
             });
 
-            // Handle stdout (JSON responses)
-            this.process.stdout?.on('data', (data) => {
-                const lines = data.toString().split('\n').filter((l: string) => l.trim());
-
-                for (const line of lines) {
-                    try {
-                        const response: BridgeResponse = JSON.parse(line);
-                        this.handleResponse(response);
-                    } catch (error) {
-                        log('error', `Failed to parse response: ${line}`);
-                    }
-                }
+            // Handle stdout (JSON responses) with proper buffering
+            this.process.stdout?.on('data', (data: Buffer) => {
+                this.handleStdout(data);
             });
 
             // Handle stderr (logs from Python)
-            this.process.stderr?.on('data', (data) => {
+            this.process.stderr?.on('data', (data: Buffer) => {
                 const message = data.toString().trim();
-                log('debug', `Bridge stderr: ${message}`);
+                if (message) {
+                    // Log at appropriate level based on content
+                    if (message.includes('ERROR') || message.includes('Exception')) {
+                        log('error', `Bridge stderr: ${message}`);
+                    } else if (message.includes('WARNING')) {
+                        log('warn', `Bridge stderr: ${message}`);
+                    } else {
+                        log('info', `Bridge stderr: ${message}`);
+                    }
+                }
             });
 
             // Handle process exit
@@ -107,6 +114,10 @@ export class PythonBridge {
 
             this.process = null;
         }
+
+        // Clear stdout buffer and pending callbacks
+        this.stdoutBuffer = '';
+        this.responseCallbacks.clear();
     }
 
     /**
@@ -122,7 +133,7 @@ export class PythonBridge {
     /**
      * Send event to bridge and wait for response
      */
-    send(event: BridgeEvent, timeout: number = 10000): Promise<BridgeResponse> {
+    send(event: BridgeEvent, timeout: number = 30000): Promise<BridgeResponse> {
         return new Promise((resolve, reject) => {
             if (!this.process || !this.process.stdin) {
                 reject(new Error('Bridge not running'));
@@ -146,10 +157,50 @@ export class PythonBridge {
 
             // Send event
             const json = JSON.stringify(eventWithId) + '\n';
-            this.process.stdin.write(json);
+            const written = this.process.stdin.write(json);
 
-            log('debug', `Sent event: ${event.type}`);
+            if (!written) {
+                log('warn', `Write buffer full for event: ${event.type}`);
+            }
+
+            log('debug', `Sent event: ${event.type} (id: ${id})`);
         });
+    }
+
+    /**
+     * Handle stdout data with proper line buffering
+     * This prevents issues with partial JSON messages
+     */
+    private handleStdout(data: Buffer): void {
+        // Add new data to buffer
+        this.stdoutBuffer += data.toString();
+
+        // Process all complete lines (ending with \n)
+        let newlineIndex: number;
+        while ((newlineIndex = this.stdoutBuffer.indexOf('\n')) !== -1) {
+            const line = this.stdoutBuffer.slice(0, newlineIndex).trim();
+            this.stdoutBuffer = this.stdoutBuffer.slice(newlineIndex + 1);
+
+            // Skip empty lines
+            if (!line) {
+                continue;
+            }
+
+            // Only process lines that look like JSON
+            if (line.startsWith('{')) {
+                try {
+                    const response: BridgeResponse = JSON.parse(line);
+                    log('debug', `Received response: ${response.status}`);
+                    this.handleResponse(response);
+                } catch (error) {
+                    log('error', `Failed to parse JSON response: ${line}`);
+                    log('error', `Parse error: ${error}`);
+                }
+            } else {
+                // Non-JSON line from Python (shouldn't happen, but log it)
+                log('warn', `Non-JSON stdout line: ${line}`);
+            }
+        }
     }
 
     /**
@@ -163,7 +214,11 @@ export class PythonBridge {
             if (callback) {
                 this.responseCallbacks.delete(id);
                 callback(response);
+            } else {
+                log('warn', `No callback found for response ID: ${id}`);
             }
+        } else {
+            log('warn', `Received response without ID: ${JSON.stringify(response)}`);
         }
     }
 

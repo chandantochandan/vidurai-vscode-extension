@@ -1,9 +1,14 @@
 {
-  "name": "vidurai-memory",
+  "name": "vidurai",
   "displayName": "Vidurai Memory Manager",
   "description": "Intelligent AI memory management for VS Code",
   "version": "0.1.0",
-  "publisher": "vidurai-ai",
+  "publisher": "vidurai",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chandantochandan/vidurai"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -44,7 +49,12 @@
         },
         "vidurai.logLevel": {
           "type": "string",
-          "enum": ["debug", "info", "warn", "error"],
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
           "default": "info",
           "description": "Logging level for debugging"
         },
@@ -66,7 +76,14 @@
         },
         "vidurai.ignoredPaths": {
           "type": "array",
-          "default": ["node_modules", ".git", "dist", "build", "out", ".venv"],
+          "default": [
+            "node_modules",
+            ".git",
+            "dist",
+            "build",
+            "out",
+            ".venv"
+          ],
           "description": "Paths to ignore for context tracking"
         }
       }

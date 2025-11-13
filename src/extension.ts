@@ -39,7 +39,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     try {
         // Ensure Python and Vidurai are installed
-        const pythonPath = await ensureVidurai();
+        const pythonPath = await ensureVidurai(context.extensionPath);
 
         // Start Python bridge
         bridge = new PythonBridge(pythonPath, context.extensionPath);

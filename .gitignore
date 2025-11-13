@@ -5,9 +5,16 @@ out/
 .DS_Store
 *.log
 
-# Python bridge (handled separately)
+# Python virtual environments
+.venv/
+venv/
+ENV/
 python-bridge/.venv/
 python-bridge/__pycache__/
 python-bridge/.pytest_cache/
 python-bridge/sessions/
 python-bridge/*.pyc
+
+# Backup files
+*.backup
+*.bak

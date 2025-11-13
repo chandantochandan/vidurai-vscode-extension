@@ -12,11 +12,11 @@ const execAsync = promisify(exec);
  * Ensure Python and Vidurai are installed
  * Returns Python path or throws error
  */
-export async function ensureVidurai(): Promise<string> {
+export async function ensureVidurai(extensionPath: string): Promise<string> {
     log('info', 'Checking Python and Vidurai installation...');
 
     // Step 1: Find Python
-    const pythonPath = await findPython();
+    const pythonPath = await findPython(extensionPath);
 
     if (!pythonPath) {
         const choice = await vscode.window.showErrorMessage(

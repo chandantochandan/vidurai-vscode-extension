@@ -3,11 +3,17 @@ Vidurai Python Bridge
 Communicates with VS Code extension via stdin/stdout JSON protocol
 """
 import sys
+import os
 import json
 import signal
 import logging
 from typing import Dict, Any
 from pathlib import Path
+
+# Force unbuffered I/O - CRITICAL for subprocess communication
+os.environ['PYTHONUNBUFFERED'] = '1'
+sys.stdin.reconfigure(line_buffering=True)
+sys.stdout.reconfigure(line_buffering=True)
 
 from event_processor import EventProcessor
 from vidurai_manager import ViduraiManager
@@ -50,9 +56,11 @@ class ViduraiBridge:
         sys.exit(0)
 
     def _send_response(self, response: Dict[str, Any]):
-        """Send JSON response to stdout"""
-        sys.stdout.write(json.dumps(response) + '\n')
-        sys.stdout.flush()
+        """Send JSON response to stdout with immediate flush"""
+        json_str = json.dumps(response)
+        sys.stdout.write(json_str + '\n')
+        sys.stdout.flush()  # Critical: ensure immediate delivery to parent process
+        logger.debug(f"Sent response: {response.get('status', 'unknown')}")
 
     def _validate_event(self, event: Dict[str, Any]) -> bool:
         """Validate event has required fields"""
@@ -263,22 +271,41 @@ class ViduraiBridge:
                         # Process event
                         response = self.process_event(event)
 
+                    # Preserve request ID in response for callback matching
+                    if '_id' in event:
+                        response['_id'] = event['_id']
+
                     # Send response
                     self._send_response(response)
 
                 except json.JSONDecodeError as e:
                     logger.error(f"Invalid JSON: {e}")
-                    self._send_response({
+                    error_response = {
                         'status': 'error',
                         'error': f'Invalid JSON: {str(e)}'
-                    })
+                    }
+                    # Try to preserve _id if event was parsed
+                    try:
+                        partial_event = json.loads(line.strip())
+                        if '_id' in partial_event:
+                            error_response['_id'] = partial_event['_id']
+                    except:
+                        pass
+                    self._send_response(error_response)
 
                 except Exception as e:
                     logger.exception("Unexpected error in main loop")
-                    self._send_response({
+                    error_response = {
                         'status': 'error',
                         'error': str(e)
-                    })
+                    }
+                    # Try to preserve _id from event if available
+                    try:
+                        if 'event' in locals() and '_id' in event:
+                            error_response['_id'] = event['_id']
+                    except:
+                        pass
+                    self._send_response(error_response)
 
         except KeyboardInterrupt:
             logger.info("Keyboard interrupt received")
