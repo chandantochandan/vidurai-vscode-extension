@@ -1,13 +1,13 @@
 {
   "name": "vidurai",
   "displayName": "Vidurai Memory Manager",
-  "description": "Intelligent AI memory management for VS Code",
-  "version": "0.1.0",
+  "description": "Intelligent AI memory for coding workflows - 90% faster context, 59% fewer tokens",
+  "version": "0.1.1",
   "publisher": "vidurai",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chandantochandan/vidurai"
+    "url": "https://github.com/chandantochandan/vidurai-vscode-extension"
   },
   "engines": {
     "vscode": "^1.80.0"
@@ -19,7 +19,11 @@
     "ai",
     "memory",
     "claude",
+    "chatgpt",
+    "copilot",
     "context",
+    "token-optimization",
+    "productivity",
     "vidurai"
   ],
   "activationEvents": [
