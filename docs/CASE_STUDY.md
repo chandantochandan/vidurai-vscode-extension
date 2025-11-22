@@ -452,10 +452,7 @@ This case study demonstrates that Vidurai delivers on its core promise:
 
 ---
 
-**विस्मृति भी विद्या है** — *"Forgetting too is knowledge"*
 
 **Case study conducted:** November 13, 2024
 **Extension version:** v0.1.0
 **Test status:** ✅ SUCCESS
-
-**जय विदुराई!** 🕉️
