@@ -6,7 +6,7 @@ Vidurai automatically tracks your coding context—files, commands, errors—and
 
 **Works with:** Claude Code, ChatGPT, GitHub Copilot, Cursor, Tabnine, Codeium, and any text-based AI assistant.
 
-**विस्मृति भी विद्या है** — *"Forgetting too is knowledge"*
+*"Forgetting too is knowledge"*
 
 ---
 
@@ -130,9 +130,7 @@ The extension automatically detects Python and installs Vidurai SDK if needed.
 
 ---
 
-## 🕉️ Philosophy
-
-**विस्मृति भी विद्या है** — *"Forgetting too is knowledge"*
+*"Forgetting too is knowledge"*
 
 Vidurai isn't just a cache—it's an intelligent memory system that knows what to remember and what to forget, just like your brain does.
 
@@ -185,7 +183,3 @@ Based on the **Three-Kosha Architecture** from Vedantic philosophy:
 MIT License - Free and open source
 
 ---
-
-**Built with 🧠 by the Vidurai team**
-
-**जय विदुराई!** 🕉️
