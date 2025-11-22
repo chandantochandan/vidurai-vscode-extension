@@ -192,15 +192,10 @@ Vidurai isn't just a cache—it's an intelligent memory system that knows what t
 
 - [GitHub Issues](https://github.com/chandantochandan/vidurai-vscode-extension/issues)
 - [Discussions](https://github.com/chandantochandan/vidurai-vscode-extension/discussions)
-- Email: support@vidurai.ai
+- Email: yvidurai@gmail.com
 
 ---
 
-**विस्मृति भी विद्या है** — *"Forgetting too is knowledge"*
-
-**जय विदुराई!** 🕉️
-
-Made with ❤️ by [Chandan Kumar](https://github.com/chandantochandan)
 
 ---
 
