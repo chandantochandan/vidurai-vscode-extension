@@ -330,10 +330,6 @@ At $0.015/1K tokens (Claude Sonnet):
 - Context sharing with team
 - Session resume after breaks
 
-**⚠️ NOT RECOMMENDED FOR:**
-- Projects with highly sensitive data (until secrets detection is battle-tested)
-- Workspaces with >10,000 files (performance not yet optimized)
-
 ### For Developers
 
 **Immediate Improvements (v0.1.1):**
@@ -382,6 +378,3 @@ At $0.015/1K tokens (Claude Sonnet):
 
 ---
 
-**विस्मृति भी विद्या है** — *"Forgetting too is knowledge"*
-
-**जय विदुराई!** 🕉️
