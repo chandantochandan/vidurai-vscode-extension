@@ -39,19 +39,19 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 ### Expected Behavior
 
-- ✅ Be respectful and constructive
-- ✅ Use welcoming and inclusive language
-- ✅ Accept constructive criticism gracefully
-- ✅ Focus on what's best for the community
-- ✅ Show empathy towards others
+- Be respectful and constructive
+- Use welcoming and inclusive language
+- Accept constructive criticism gracefully
+- Focus on what's best for the community
+- Show empathy towards others
 
 ### Unacceptable Behavior
 
-- ❌ Harassment or discriminatory language
-- ❌ Trolling or insulting comments
-- ❌ Personal or political attacks
-- ❌ Public or private harassment
-- ❌ Publishing others' private information
+- Harassment or discriminatory language
+- Trolling or insulting comments
+- Personal or political attacks
+- Public or private harassment
+- Publishing others' private information
 
 **Violations:** Report to contact@vidurai.ai
 
@@ -72,10 +72,10 @@ We are committed to providing a welcoming and inclusive environment for all cont
 - Expected vs actual behavior
 - Screenshots/logs (if applicable)
 - Environment details:
-  - OS and version
-  - VS Code version
-  - Python version
-  - Vidurai version
+ - OS and version
+ - VS Code version
+ - Python version
+ - Vidurai version
 
 **Template:**
 ```markdown
@@ -134,12 +134,12 @@ We welcome contributions in these areas:
 **High Priority:**
 - 🐛 Bug fixes
 - 📊 Performance optimizations
-- 🔒 Security improvements
+- Security improvements
 - 📝 Documentation improvements
-- ✅ Test coverage
+- Test coverage
 
 **Medium Priority:**
-- ✨ Feature implementations (from roadmap)
+- Feature implementations (from roadmap)
 - 🎨 UI/UX improvements
 - 🌐 Internationalization (i18n)
 
@@ -161,10 +161,10 @@ We welcome contributions in these areas:
 
 **Recommended:**
 - VS Code Extensions:
-  - ESLint
-  - Prettier
-  - Python
-  - EditorConfig
+ - ESLint
+ - Prettier
+ - Python
+ - EditorConfig
 
 ### Fork and Clone
 
@@ -193,9 +193,9 @@ npm install
 # Install Python bridge dependencies
 cd python-bridge
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-pip install pytest  # For testing
+pip install pytest # For testing
 
 # Return to extension root
 cd ..
@@ -204,7 +204,7 @@ cd ..
 ### Setup Vidurai SDK (if contributing to core)
 
 ```bash
-cd vidurai  # Main SDK directory
+cd vidurai # Main SDK directory
 
 # Install in editable mode
 pip install -e .
@@ -264,12 +264,12 @@ git rebase upstream/main
 # [Write code, tests, docs]
 
 # 3. Run tests
-npm test  # TypeScript
-pytest    # Python
+npm test # TypeScript
+pytest # Python
 
 # 4. Format code
-npm run format  # TypeScript
-black .         # Python
+npm run format # TypeScript
+black . # Python
 
 # 5. Commit with meaningful message
 git commit -m "feat: add memory ledger UI component"
@@ -403,25 +403,25 @@ git pull upstream main
 
 **Best Practices:**
 ```typescript
-// ✅ Good: Explicit types
+// Good: Explicit types
 function processEvent(event: CodeEvent): Promise<Response> {
-    // ...
+ // ...
 }
 
-// ❌ Bad: Implicit any
+// Bad: Implicit any
 function processEvent(event) {
-    // ...
+ // ...
 }
 
-// ✅ Good: Async/await
+// Good: Async/await
 async function fetchData() {
-    const result = await api.call();
-    return result;
+ const result = await api.call();
+ return result;
 }
 
-// ❌ Bad: Promise chains
+// Bad: Promise chains
 function fetchData() {
-    return api.call().then(result => result);
+ return api.call().then(result => result);
 }
 ```
 
@@ -435,34 +435,34 @@ function fetchData() {
 
 **Best Practices:**
 ```python
-# ✅ Good: Type hints and docstring
+# Good: Type hints and docstring
 def classify_event(event: dict) -> SalienceLevel:
-    """
-    Classify event by salience level.
+ """
+ Classify event by salience level.
 
-    Args:
-        event: Event dictionary with type and metadata
+ Args:
+ event: Event dictionary with type and metadata
 
-    Returns:
-        SalienceLevel enum (CRITICAL, HIGH, MEDIUM, LOW, NOISE)
-    """
-    # ...
+ Returns:
+ SalienceLevel enum (CRITICAL, HIGH, MEDIUM, LOW, NOISE)
+ """
+ # ...
 
-# ❌ Bad: No types or documentation
+# Bad: No types or documentation
 def classify_event(event):
-    # ...
+ # ...
 
-# ✅ Good: Specific exception handling
+# Good: Specific exception handling
 try:
-    result = process_data(data)
+ result = process_data(data)
 except ValueError as e:
-    logger.error(f"Invalid data: {e}")
+ logger.error(f"Invalid data: {e}")
 
-# ❌ Bad: Bare except
+# Bad: Bare except
 try:
-    result = process_data(data)
+ result = process_data(data)
 except:
-    pass
+ pass
 ```
 
 ### Naming Conventions
@@ -481,7 +481,7 @@ except:
 
 ---
 
-## ✅ Testing Guidelines
+## Testing Guidelines
 
 ### Test Coverage Requirements
 
@@ -494,31 +494,31 @@ except:
 **TypeScript (Jest):**
 ```typescript
 describe('PythonBridge', () => {
-    test('spawns bridge successfully', async () => {
-        const bridge = await spawnBridge();
-        expect(bridge.pid).toBeDefined();
-        bridge.kill();
-    });
+ test('spawns bridge successfully', async () => {
+ const bridge = await spawnBridge();
+ expect(bridge.pid).toBeDefined();
+ bridge.kill();
+ });
 
-    test('handles bridge timeout', async () => {
-        await expect(sendToBridge({...}, 100))
-            .rejects
-            .toThrow('Timeout');
-    });
+ test('handles bridge timeout', async () => {
+ await expect(sendToBridge({...}, 100))
+ .rejects
+ .toThrow('Timeout');
+ });
 });
 ```
 
 **Python (pytest):**
 ```python
 def test_salience_classification():
-    """Test salience rules for different event types"""
-    # Error diagnostic should be CRITICAL
-    event = {'type': 'diagnostic', 'severity': 'error'}
-    assert classify_event(event) == SalienceLevel.CRITICAL
+ """Test salience rules for different event types"""
+ # Error diagnostic should be CRITICAL
+ event = {'type': 'diagnostic', 'severity': 'error'}
+ assert classify_event(event) == SalienceLevel.CRITICAL
 
-    # Test file edit should be HIGH
-    event = {'type': 'file_edit', 'file': 'test_main.py'}
-    assert classify_event(event) == SalienceLevel.HIGH
+ # Test file edit should be HIGH
+ event = {'type': 'file_edit', 'file': 'test_main.py'}
+ assert classify_event(event) == SalienceLevel.HIGH
 ```
 
 ### Running Tests Locally
@@ -559,28 +559,28 @@ pytest-watch
 **Example:**
 ```python
 def extract_gist(event: dict, use_llm: bool = False) -> str:
-    """
-    Extract semantic gist from code event.
+ """
+ Extract semantic gist from code event.
 
-    Uses rule-based patterns by default, optionally uses LLM
-    for more accurate extraction.
+ Uses rule-based patterns by default, optionally uses LLM
+ for more accurate extraction.
 
-    Args:
-        event: Event dictionary containing type, file, content
-        use_llm: Whether to use LLM-based extraction
+ Args:
+ event: Event dictionary containing type, file, content
+ use_llm: Whether to use LLM-based extraction
 
-    Returns:
-        String gist summarizing the event semantically
+ Returns:
+ String gist summarizing the event semantically
 
-    Raises:
-        ValueError: If event type is unsupported
+ Raises:
+ ValueError: If event type is unsupported
 
-    Examples:
-        >>> event = {'type': 'file_edit', 'file': 'test.py'}
-        >>> extract_gist(event)
-        'Modified test file: test.py'
-    """
-    # Implementation
+ Examples:
+ >>> event = {'type': 'file_edit', 'file': 'test.py'}
+ >>> extract_gist(event)
+ 'Modified test file: test.py'
+ """
+ # Implementation
 ```
 
 ### User Documentation
@@ -594,13 +594,13 @@ def extract_gist(event: dict, use_llm: bool = False) -> str:
 **Documentation Structure:**
 ```
 docs/
-├── installation.md      # Setup instructions
-├── quick-start.md       # 5-minute tutorial
-├── configuration.md     # All settings explained
-├── architecture.md      # System design
-├── api-reference.md     # Public API docs
-├── troubleshooting.md   # Common issues
-└── case-studies/        # Real-world examples
+├── installation.md # Setup instructions
+├── quick-start.md # 5-minute tutorial
+├── configuration.md # All settings explained
+├── architecture.md # System design
+├── api-reference.md # Public API docs
+├── troubleshooting.md # Common issues
+└── case-studies/ # Real-world examples
 ```
 
 ---

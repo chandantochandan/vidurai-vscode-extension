@@ -54,7 +54,7 @@ export class StatusBarManager {
     async update(): Promise<void> {
         try {
             if (!this.bridge.isRunning()) {
-                this.statusBarItem.text = '$(database) Vidurai: Offline';
+                this.statusBarItem.text = '⊚ Vidurai: Offline';
                 this.statusBarItem.tooltip = 'Vidurai bridge is not running\nClick to restart';
                 this.statusBarItem.command = 'vidurai.restartBridge';
                 return;
@@ -66,14 +66,14 @@ export class StatusBarManager {
             if (response.status === 'ok' && response.stats) {
                 const memoryCount = response.stats.total_memories || 0;
 
-                this.statusBarItem.text = `$(database) ${memoryCount}`;
+                this.statusBarItem.text = `⊚ ${memoryCount}`;
                 this.statusBarItem.tooltip = `Vidurai: ${memoryCount} memories tracked\nClick to copy context`;
                 this.statusBarItem.command = 'vidurai.copyContext';
             }
 
         } catch (error: any) {
             log('warn', `Status update failed: ${error.message}`);
-            this.statusBarItem.text = '$(database) Vidurai: Error';
+            this.statusBarItem.text = '⊚ Vidurai: Error';
             this.statusBarItem.tooltip = 'Failed to get stats\nClick to restart';
             this.statusBarItem.command = 'vidurai.restartBridge';
         }

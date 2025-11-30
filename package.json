@@ -1,10 +1,10 @@
 {
   "name": "vidurai",
   "displayName": "Vidurai Memory Manager",
-  "description": "Intelligent AI memory for coding workflows - 90% faster context, 59% fewer tokens",
-  "version": "0.1.1",
+  "description": "Telemetry agent for VS Code. Captures low-latency file and terminal events for the Vidurai Daemon.",
+  "version": "2.0.0",
   "publisher": "vidurai",
-  "icon": "assets/icon.png",
+  "icon": "assets/brand/logo_icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/chandantochandan/vidurai-vscode-extension"
@@ -31,6 +31,23 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vidurai",
+          "title": "Vidurai Memory",
+          "icon": "assets/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "vidurai": [
+        {
+          "id": "viduraiMemory",
+          "name": "Project Memory"
+        }
+      ]
+    },
     "configuration": {
       "title": "Vidurai",
       "properties": {
@@ -107,8 +124,38 @@
         "command": "vidurai.showLogs",
         "title": "Vidurai: Show Logs",
         "icon": "$(output)"
+      },
+      {
+        "command": "vidurai.refreshMemories",
+        "title": "Refresh Memories",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "vidurai.showMemoryDetails",
+        "title": "Show Memory Details"
+      },
+      {
+        "command": "vidurai.copyMemoryContext",
+        "title": "Copy to Clipboard",
+        "icon": "$(clippy)"
       }
-    ]
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "vidurai.refreshMemories",
+          "when": "view == viduraiMemory",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "vidurai.copyMemoryContext",
+          "when": "view == viduraiMemory && viewItem == memory",
+          "group": "inline"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

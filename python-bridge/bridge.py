@@ -71,6 +71,11 @@ class ViduraiBridge:
             'recall_context': ['type', 'query'],
             'get_stats': ['type'],
             'ping': ['type'],
+            # v2.0: New commands for database queries
+            'get_recent_activity': ['type', 'project_path'],
+            'recall_memories': ['type', 'project_path'],
+            'get_statistics': ['type', 'project_path'],
+            'get_context_for_ai': ['type', 'project_path'],
         }
 
         event_type = event.get('type')
@@ -108,6 +113,19 @@ class ViduraiBridge:
 
             elif event_type == 'get_stats':
                 return self._handle_get_stats()
+
+            # v2.0: New database query commands
+            elif event_type == 'get_recent_activity':
+                return self._handle_get_recent_activity(event)
+
+            elif event_type == 'recall_memories':
+                return self._handle_recall_memories(event)
+
+            elif event_type == 'get_statistics':
+                return self._handle_get_statistics(event)
+
+            elif event_type == 'get_context_for_ai':
+                return self._handle_get_context_for_ai(event)
 
             else:
                 return {
@@ -242,6 +260,108 @@ class ViduraiBridge:
             'status': 'ok',
             'stats': stats
         }
+
+    # v2.0: New database query handlers
+    def _handle_get_recent_activity(self, event: Dict[str, Any]) -> Dict[str, Any]:
+        """Get recent memories for a project (v2.0)"""
+        try:
+            project_path = event['project_path']
+            hours = event.get('hours', 24)
+            limit = event.get('limit', 20)
+
+            memories = self.vidurai_manager.get_recent_activity(
+                project_path=project_path,
+                hours=hours,
+                limit=limit
+            )
+
+            return {
+                'status': 'ok',
+                'memories': memories,
+                'count': len(memories)
+            }
+
+        except Exception as e:
+            logger.exception(f"Error getting recent activity: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+
+    def _handle_recall_memories(self, event: Dict[str, Any]) -> Dict[str, Any]:
+        """Recall memories from database (v2.0)"""
+        try:
+            project_path = event['project_path']
+            query = event.get('query')
+            min_salience = event.get('min_salience', 'MEDIUM')
+            limit = event.get('limit', 10)
+
+            memories = self.vidurai_manager.recall_from_database(
+                project_path=project_path,
+                query=query,
+                min_salience=min_salience,
+                limit=limit
+            )
+
+            return {
+                'status': 'ok',
+                'memories': memories,
+                'count': len(memories)
+            }
+
+        except Exception as e:
+            logger.exception(f"Error recalling memories: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+
+    def _handle_get_statistics(self, event: Dict[str, Any]) -> Dict[str, Any]:
+        """Get database statistics for a project (v2.0)"""
+        try:
+            project_path = event['project_path']
+
+            stats = self.vidurai_manager.get_database_statistics(
+                project_path=project_path
+            )
+
+            return {
+                'status': 'ok',
+                'statistics': stats
+            }
+
+        except Exception as e:
+            logger.exception(f"Error getting statistics: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+
+    def _handle_get_context_for_ai(self, event: Dict[str, Any]) -> Dict[str, Any]:
+        """Get formatted context for AI injection (v2.0 - Claude Code integration)"""
+        try:
+            project_path = event['project_path']
+            query = event.get('query')
+            max_tokens = event.get('max_tokens', 2000)
+
+            context = self.vidurai_manager.get_context_for_ai(
+                project_path=project_path,
+                query=query,
+                max_tokens=max_tokens
+            )
+
+            return {
+                'status': 'ok',
+                'context': context
+            }
+
+        except Exception as e:
+            logger.exception(f"Error getting AI context: {e}")
+            return {
+                'status': 'error',
+                'error': str(e),
+                'context': f'[Error: {str(e)}]'
+            }
 
     def run(self):
         """Main loop: read from stdin, process, write to stdout"""

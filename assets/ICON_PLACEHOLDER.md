@@ -42,11 +42,11 @@ You can create this icon using:
 ### Example Structure
 ```
 ┌─────────────────┐
-│  #F4A460        │  Top Kosha (Annamaya - Raw)
+│ #F4A460 │ Top Kosha (Annamaya - Raw)
 ├─────────────────┤
-│  #DAA520        │  Middle Kosha (Pranamaya - Active)
+│ #DAA520 │ Middle Kosha (Pranamaya - Active)
 ├─────────────────┤
-│  #B8860B        │  Bottom Kosha (Manomaya - Wisdom)
+│ #B8860B │ Bottom Kosha (Manomaya - Wisdom)
 └─────────────────┘
 ```
 

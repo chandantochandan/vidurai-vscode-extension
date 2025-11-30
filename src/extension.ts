@@ -1,8 +1,12 @@
 /**
  * Vidurai VS Code Extension
  * Main entry point
+ * v2.0 - Phase 2: Active project tracking for MCP server
  */
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 import { PythonBridge } from './pythonBridge';
 import { StatusBarManager } from './statusBar';
 import { ensureVidurai } from './installer';
@@ -10,12 +14,14 @@ import { log, getConfig, getOutputChannel } from './utils';
 import { FileWatcher } from './fileWatcher';
 import { TerminalWatcher } from './terminalWatcher';
 import { DiagnosticWatcher } from './diagnosticWatcher';
+import { registerMemoryTreeView } from './views/memoryTreeView';
 
 let bridge: PythonBridge | null = null;
 let statusBar: StatusBarManager | null = null;
 let fileWatcher: FileWatcher | null = null;
 let terminalWatcher: TerminalWatcher | null = null;
 let diagnosticWatcher: DiagnosticWatcher | null = null;
+let memoryTreeView: vscode.TreeView<any> | null = null;
 
 /**
  * Extension activation
@@ -52,6 +58,10 @@ export async function activate(context: vscode.ExtensionContext) {
         // Register commands
         registerCommands(context);
 
+        // v2.0: Register TreeView
+        memoryTreeView = registerMemoryTreeView(context, bridge);
+        log('info', 'Memory TreeView registered');
+
         // Start watchers (Phase 3)
         fileWatcher = new FileWatcher(bridge);
         fileWatcher.start();
@@ -61,6 +71,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
         diagnosticWatcher = new DiagnosticWatcher(bridge);
         diagnosticWatcher.start();
+
+        // v2.0 Phase 2: Write active project for MCP server/ChatGPT extension
+        writeActiveProject();
+        context.subscriptions.push(
+            vscode.workspace.onDidChangeWorkspaceFolders(writeActiveProject)
+        );
 
         log('info', 'Vidurai extension activated successfully');
 
@@ -111,6 +127,40 @@ export function deactivate() {
     if (statusBar) {
         statusBar.dispose();
         statusBar = null;
+    }
+
+    if (memoryTreeView) {
+        memoryTreeView.dispose();
+        memoryTreeView = null;
+    }
+}
+
+/**
+ * Write active project path for MCP server and browser extensions
+ * v2.0 Phase 2
+ */
+function writeActiveProject() {
+    const projectPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!projectPath) {
+        log('debug', 'No workspace folder open, skipping active project write');
+        return;
+    }
+
+    try {
+        const viduraiDir = path.join(os.homedir(), '.vidurai');
+        const activeFile = path.join(viduraiDir, 'active-project.txt');
+
+        // Ensure directory exists
+        if (!fs.existsSync(viduraiDir)) {
+            fs.mkdirSync(viduraiDir, { recursive: true });
+        }
+
+        // Write project path
+        fs.writeFileSync(activeFile, projectPath, 'utf-8');
+
+        log('info', `Active project updated: ${projectPath}`);
+    } catch (error: any) {
+        log('error', `Failed to write active project: ${error.message}`);
     }
 }
 

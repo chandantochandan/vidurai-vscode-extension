@@ -13,7 +13,7 @@ ls out/*.js
 
 # 2. Test Python bridge communication
 node test-bridge.js
-# Should see: ✅ Bridge test PASSED!
+# Should see: Bridge test PASSED!
 
 # 3. Verify Python has Vidurai installed
 python-bridge/.venv/bin/python -c "import vidurai; print('Vidurai version:', vidurai.__version__)"
@@ -35,7 +35,7 @@ In VS Code:
 
 ### 2. Test Checklist
 
-#### ✅ Test 1: Extension Activation
+#### Test 1: Extension Activation
 **Steps:**
 1. Look at bottom-right status bar
 2. Should see: `$(database) 0` or `$(database) Vidurai: Offline`
@@ -48,7 +48,7 @@ In VS Code:
 
 ---
 
-#### ✅ Test 2: Show Logs
+#### Test 2: Show Logs
 **Steps:**
 1. Press `Ctrl+Shift+P` (Mac: `Cmd+Shift+P`)
 2. Type: `Vidurai: Show Logs`
@@ -69,28 +69,28 @@ In VS Code:
 
 ---
 
-#### ✅ Test 3: Copy Context Command
+#### Test 3: Copy Context Command
 **Steps:**
 1. Press `Ctrl+Shift+P`
 2. Type: `Vidurai: Copy Relevant Context`
 3. Press Enter
 
 **Expected Result:**
-- Notification: `✅ Copied 0 memories to clipboard!`
+- Notification: ` Copied 0 memories to clipboard!`
 - (0 is expected - no files tracked yet)
 
 **Pass Criteria:** Command executes without errors
 
 ---
 
-#### ✅ Test 4: Restart Bridge
+#### Test 4: Restart Bridge
 **Steps:**
 1. Press `Ctrl+Shift+P`
 2. Type: `Vidurai: Restart Python Bridge`
 3. Press Enter
 
 **Expected Result:**
-- Notification: `✅ Vidurai bridge restarted`
+- Notification: ` Vidurai bridge restarted`
 - Status bar briefly shows "Offline" then returns to memory count
 - Logs show: `Restarting bridge` → `Bridge started successfully`
 
@@ -98,19 +98,19 @@ In VS Code:
 
 ---
 
-#### ✅ Test 5: Status Bar Interaction
+#### Test 5: Status Bar Interaction
 **Steps:**
 1. Click the status bar item: `$(database) 0`
 
 **Expected Result:**
 - Same as Test 3 (Copy Context)
-- Notification: `✅ Copied 0 memories to clipboard!`
+- Notification: ` Copied 0 memories to clipboard!`
 
 **Pass Criteria:** Click triggers copy context command
 
 ---
 
-#### ✅ Test 6: Bridge Crash Recovery (Optional)
+#### Test 6: Bridge Crash Recovery (Optional)
 **Steps:**
 1. Open terminal
 2. Find bridge process: `ps aux | grep bridge.py`
@@ -196,7 +196,7 @@ python --version
 
 **Solution:**
 - Click "Install Automatically" (requires internet)
-- Wait for notification: `✅ Vidurai SDK installed successfully!`
+- Wait for notification: ` Vidurai SDK installed successfully!`
 
 **Manual Install:**
 ```bash
@@ -255,7 +255,7 @@ Not yet implemented. Will be added in Phase 3.
 
 ```bash
 # Run bridge communication test
-npm test  # (Not yet implemented)
+npm test # (Not yet implemented)
 
 # Or use our custom test:
 node test-bridge.js

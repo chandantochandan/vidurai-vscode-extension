@@ -1,15 +1,25 @@
 """
 Vidurai Manager
 Manages VismritiMemory instance with session persistence
+v2.0: Now with database integration
 """
 import os
 import pickle
 import logging
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 from vidurai import VismritiMemory
 from vidurai.core.data_structures_v3 import SalienceLevel, Memory
+
+# v2.0: Database backend
+try:
+    from vidurai.storage.database import MemoryDatabase, SalienceLevel as DBSalienceLevel
+    DATABASE_AVAILABLE = True
+except Exception:
+    DATABASE_AVAILABLE = False
+    logger = logging.getLogger('vidurai-bridge')
+    logger.warning("Database not available")
 
 logger = logging.getLogger('vidurai-bridge')
 
@@ -27,15 +37,23 @@ class ViduraiManager:
         self.session_id = session_id or "default"
         self.session_file = self.session_dir / f"{self.session_id}.pkl"
 
-        # Initialize Vidurai memory
+        # Initialize Vidurai memory (v2.0: with database backend)
         self.memory = VismritiMemory(
             enable_gist_extraction=False  # Using rule-based gist
         )
 
+        # v2.0: Direct database access for queries
+        self.db = None
+        if DATABASE_AVAILABLE:
+            try:
+                self.db = MemoryDatabase()
+            except Exception as e:
+                logger.error(f"Failed to initialize database: {e}")
+
         # Load existing session if available
         self._load_session()
 
-        logger.info(f"Vidurai manager initialized (session: {self.session_id})")
+        logger.info(f"Vidurai manager initialized (session: {self.session_id}, db: {self.db is not None})")
 
     def _load_session(self):
         """Load session from disk if exists"""
@@ -118,3 +136,73 @@ class ViduraiManager:
                 'session_id': self.session_id,
                 'total_memories': 0
             }
+
+    # v2.0: New database query methods
+
+    def get_recent_activity(
+        self,
+        project_path: str,
+        hours: int = 24,
+        limit: int = 20
+    ) -> List[Dict[str, Any]]:
+        """Get recent memories from database (v2.0)"""
+        if not self.db:
+            logger.warning("Database not available")
+            return []
+
+        try:
+            return self.db.get_recent_activity(project_path, hours, limit)
+        except Exception as e:
+            logger.error(f"Error getting recent activity: {e}")
+            return []
+
+    def recall_from_database(
+        self,
+        project_path: str,
+        query: Optional[str] = None,
+        min_salience: str = 'MEDIUM',
+        limit: int = 10
+    ) -> List[Dict[str, Any]]:
+        """Recall memories from database (v2.0)"""
+        if not self.db:
+            logger.warning("Database not available")
+            return []
+
+        try:
+            # Convert string to DBSalienceLevel
+            db_salience = DBSalienceLevel[min_salience.upper()]
+
+            return self.db.recall_memories(
+                project_path=project_path,
+                query=query,
+                min_salience=db_salience,
+                limit=limit
+            )
+        except Exception as e:
+            logger.error(f"Error recalling from database: {e}")
+            return []
+
+    def get_database_statistics(self, project_path: str) -> Dict[str, Any]:
+        """Get database statistics for a project (v2.0)"""
+        if not self.db:
+            logger.warning("Database not available")
+            return {'total': 0, 'by_salience': {}, 'by_type': {}}
+
+        try:
+            return self.db.get_statistics(project_path)
+        except Exception as e:
+            logger.error(f"Error getting database statistics: {e}")
+            return {'total': 0, 'by_salience': {}, 'by_type': {}}
+
+    def get_context_for_ai(
+        self,
+        project_path: str,
+        query: Optional[str] = None,
+        max_tokens: int = 2000
+    ) -> str:
+        """Get formatted context for AI injection (v2.0)"""
+        try:
+            return self.memory.get_context_for_ai(query=query, max_tokens=max_tokens)
+        except Exception as e:
+            logger.error(f"Error getting AI context: {e}")
+            return f"[Error: {str(e)}]"

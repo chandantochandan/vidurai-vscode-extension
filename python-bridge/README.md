@@ -5,9 +5,9 @@ Python bridge for Vidurai VS Code extension. Handles context tracking and memory
 ## Architecture
 ```
 VS Code Extension (TypeScript)
-        ↓ stdin (JSON events)
+ ↓ stdin (JSON events)
 Python Bridge (this package)
-        ↓ stdout (JSON responses)
+ ↓ stdout (JSON responses)
 VS Code Extension (TypeScript)
 ```
 
@@ -49,49 +49,49 @@ Response:
 #### 2. File Edit
 ```json
 {
-    "type": "file_edit",
-    "file": "/path/to/file.py",
-    "content": "print('hello')"
+ "type": "file_edit",
+ "file": "/path/to/file.py",
+ "content": "print('hello')"
 }
 ```
 
 Response:
 ```json
 {
-    "status": "ok",
-    "memory_id": "abc123",
-    "salience": "MEDIUM",
-    "gist": "Edited file.py",
-    "secrets_detected": false
+ "status": "ok",
+ "memory_id": "abc123",
+ "salience": "MEDIUM",
+ "gist": "Edited file.py",
+ "secrets_detected": false
 }
 ```
 
 #### 3. Terminal Output
 ```json
 {
-    "type": "terminal_output",
-    "command": "pytest",
-    "output": "5 passed",
-    "exitCode": 0
+ "type": "terminal_output",
+ "command": "pytest",
+ "output": "5 passed",
+ "exitCode": 0
 }
 ```
 
 #### 4. Diagnostic
 ```json
 {
-    "type": "diagnostic",
-    "file": "/path/to/file.py",
-    "severity": "error",
-    "message": "Syntax error"
+ "type": "diagnostic",
+ "file": "/path/to/file.py",
+ "severity": "error",
+ "message": "Syntax error"
 }
 ```
 
 #### 5. Recall Context
 ```json
 {
-    "type": "recall_context",
-    "query": "recent errors",
-    "top_k": 10
+ "type": "recall_context",
+ "query": "recent errors",
+ "top_k": 10
 }
 ```
 

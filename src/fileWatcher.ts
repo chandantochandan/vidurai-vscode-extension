@@ -6,6 +6,12 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { PythonBridge } from './pythonBridge';
 import { log, getConfig } from './utils';
+import {
+    ViduraiEvent,
+    FileEditPayload,
+    createEvent,
+    VIDURAI_SCHEMA_VERSION
+} from './shared/events';
 
 export class FileWatcher {
     private bridge: PythonBridge;
@@ -129,15 +135,62 @@ export class FileWatcher {
 
     /**
      * Send file edit event to bridge
+     *
+     * Creates a structured ViduraiEvent<FileEditPayload> internally,
+     * though the bridge protocol remains unchanged for now.
      */
     private async sendFileEditEvent(filePath: string, content: string): Promise<void> {
         try {
             log('debug', `Sending file edit: ${filePath}`);
 
+            // Get project root from workspace
+            const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(filePath));
+            const projectRoot = workspaceFolder?.uri.fsPath;
+
+            // Detect language from file extension
+            const ext = path.extname(filePath).toLowerCase();
+            const languageMap: Record<string, string> = {
+                '.ts': 'typescript', '.tsx': 'typescriptreact',
+                '.js': 'javascript', '.jsx': 'javascriptreact',
+                '.py': 'python', '.rb': 'ruby', '.go': 'go',
+                '.rs': 'rust', '.java': 'java', '.cpp': 'cpp',
+                '.c': 'c', '.cs': 'csharp', '.php': 'php',
+                '.swift': 'swift', '.kt': 'kotlin',
+                '.json': 'json', '.yaml': 'yaml', '.yml': 'yaml',
+                '.md': 'markdown', '.html': 'html', '.css': 'css',
+            };
+            const language = languageMap[ext] || undefined;
+
+            // Create structured ViduraiEvent
+            const payload: FileEditPayload = {
+                file_path: filePath,
+                language: language,
+                change_type: 'save',  // This function is called on save
+                line_count: content.split('\n').length,
+                editor: 'vscode'
+            };
+
+            const event: ViduraiEvent<FileEditPayload> = createEvent(
+                'file_edit',
+                'vscode',
+                payload,
+                {
+                    channel: 'human',
+                    project_root: projectRoot
+                }
+            );
+
+            log('debug', `ViduraiEvent created: ${event.event_id} (${VIDURAI_SCHEMA_VERSION})`);
+
+            // Send to bridge (protocol unchanged - we just send structured data)
             const response = await this.bridge.send({
                 type: 'file_edit',
                 file: filePath,
-                content: content
+                content: content,
+                // Include event metadata for future use
+                _event_id: event.event_id,
+                _timestamp: event.timestamp,
+                _schema_version: event.schema_version
             }, 5000);
 
             if (response.status === 'ok') {
